@@ -1,0 +1,11 @@
+# Ignore IntelliJ settings
+.idea
+
+# Ignore virtual env
+venv/
+
+# Ignore the data folder
+data/
+
+# Ignore caches
+__pycache__/
