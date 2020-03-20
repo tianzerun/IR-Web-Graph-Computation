@@ -98,16 +98,23 @@ class PageRankMethod(object):
 
     @classmethod
     def algebraic(cls, in_links, out_links_count, n, d, max_iter=100):
+        sink_nodes = {node for node, out_nodes_count in out_links_count.items()
+                      if out_nodes_count == 0}
+
         tolerance = (1 / (n * 100))
         page_rank = np.array([1 / n] * n)
 
         def update_dist(dist):
+            sink_page_rank = sum(dist[node] for node in sink_nodes)
+            pre_sum = sum(dist)
             new_dist = []
             for _id, value in enumerate(dist):
                 new_value = (1 - d) / n
+                new_value += d * sink_page_rank / n
                 for parent_id in in_links[_id]:
                     new_value += d * dist[parent_id] / out_links_count[parent_id]
                 new_dist.append(new_value)
+            cur_sum = sum(new_dist)
             return np.array(new_dist)
 
         return cls.iterative_update(page_rank, tolerance, update_dist, max_iter)
