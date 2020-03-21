@@ -22,8 +22,12 @@ class PageRank(object):
         id_by_node = {node: _id for _id, node in enumerate(nodes_list)}
         in_links = {id_by_node[node]: set(id_by_node[from_node] for from_node in from_nodes)
                     for node, from_nodes in self._links.ins.items()}
-        out_links_count = {id_by_node[node]: len(self._links.outs[node])
-                           for node in self._links.outs.keys()}
+        # Note: only count the outgoing links which are parts of the graph.
+        # e.x. In the case of a web crawl, out going links which are not crawled are ignored.
+        out_links_count = {
+            id_by_node[node]: len(list(filter(lambda x: x in self._links.ins, self._links.outs[node])))
+            for node in self._links.outs.keys()
+        }
         raw_stable_dist = method(in_links, out_links_count, n, markov)
         self._stable_dist = list(zip(nodes_list, raw_stable_dist))
 
