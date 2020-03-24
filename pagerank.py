@@ -110,7 +110,7 @@ class PageRankMethod(object):
 
         def update_dist(dist):
             sink_page_rank = sum(dist[node] for node in sink_nodes)
-            pre_sum = sum(dist)
+
             new_dist = []
             for _id, value in enumerate(dist):
                 new_value = (1 - d) / n
@@ -118,7 +118,7 @@ class PageRankMethod(object):
                 for parent_id in in_links[_id]:
                     new_value += d * dist[parent_id] / out_links_count[parent_id]
                 new_dist.append(new_value)
-            cur_sum = sum(new_dist)
+
             return np.array(new_dist)
 
         return cls.iterative_update(page_rank, tolerance, update_dist, max_iter)
