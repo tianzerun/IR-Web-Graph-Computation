@@ -230,6 +230,21 @@ def get_links(args):
         return pages_to_links_adapter(util.load_pickle(pickle_path))
 
 
+def remove_intrinsic_links(links):
+    def hostname(i):
+        # Notice adding // in front of the url to make urlparse work correctly.
+        url_obj = urllib.parse.urlparse(f"//{i}")
+        return url_obj.hostname
+
+    ins = dict()
+    outs = dict()
+    for url in links.ins.keys():
+        url_hostname = hostname(url)
+        ins[url] = list(filter(lambda x: hostname(x) != url_hostname, links.ins[url]))
+        outs[url] = list(filter(lambda x: hostname(x) != url_hostname, links.outs[url]))
+    return Links(ins=ins, outs=outs)
+
+
 def file_writer(scored_pages, path):
     with path.open("w") as fp:
         for _id, score in scored_pages:
@@ -258,7 +273,8 @@ def main():
     parser = create_args_parser()
     args = parser.parse_args()
     links = get_links(args)
-    hits = Hits(links)
+    intrinsic_links_removed = remove_intrinsic_links(links)
+    hits = Hits(intrinsic_links_removed)
     hits.compute()
     top_authorities = hits.top(ScoreType.AUTHORITY)
     top_hubs = hits.top(ScoreType.HUB)
