@@ -6,6 +6,8 @@ venv/
 
 # Ignore the data folder
 data/
+logs/
+results/
 
 # Ignore caches
 __pycache__/
